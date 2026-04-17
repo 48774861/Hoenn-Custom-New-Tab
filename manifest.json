@@ -14,5 +14,6 @@
       "resources": ["wallpaper.mp4", "settings.png"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "permissions": ["bookmarks"]
 }
