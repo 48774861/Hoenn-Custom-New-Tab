@@ -1,118 +1,165 @@
 document.addEventListener("DOMContentLoaded", () => {
-const btn = document.getElementById("settings-btn");
+  const btn = document.getElementById("settings-btn");
+  const dock = document.getElementById("app-dock");
 
-btn.addEventListener("click", () => {
-chrome.tabs.create({ url: "chrome://settings/" });
-});
+  let root = [];
+  let currentFolder = null;
 
-const dock = document.getElementById("app-dock");
+  btn.addEventListener("click", () => {
+    chrome.tabs.create({ url: "chrome://settings/" });
+  });
 
-function loadValidIcon(img, sources, defaultIcon) {
-let index = 0;
+  // ---------------- ICON LOADER ----------------
+  function loadValidIcon(img, sources, defaultIcon) {
+    let index = 0;
 
-function tryNext() {
-  if (index >= sources.length) {
-    img.src = defaultIcon;
-    return;
+    function tryNext() {
+      if (index >= sources.length) {
+        img.src = defaultIcon;
+        return;
+      }
+
+      const src = sources[index];
+      const testImg = new Image();
+
+      const timeout = setTimeout(() => {
+        testImg.src = "";
+        index++;
+        tryNext();
+      }, 1200);
+
+      testImg.onload = () => {
+        clearTimeout(timeout);
+
+        const w = testImg.naturalWidth;
+        const h = testImg.naturalHeight;
+
+        if (w < 32 || h < 32 || src.endsWith(".ico")) {
+          index++;
+          tryNext();
+          return;
+        }
+
+        img.src = src;
+      };
+
+      testImg.onerror = () => {
+        clearTimeout(timeout);
+        index++;
+        tryNext();
+      };
+
+      testImg.src = src;
+    }
+
+    tryNext();
   }
 
-  const src = sources[index];
-  const testImg = new Image();
+  // ---------------- BOOKMARK ICON ----------------
+  function createBookmark(node) {
+    const img = document.createElement("img");
 
-  // ⏱️ Timeout = treat as failure (like unreachable/blocked/slow servers)
-  const timeout = setTimeout(() => {
-    testImg.src = ""; // cancel
-    index++;
-    tryNext();
-  }, 1200);
+    let domain = "";
+    try {
+      domain = new URL(node.url).hostname;
+    } catch {}
 
-  testImg.onload = () => {
-    clearTimeout(timeout);
+    let clean = node.url.toLowerCase()
+      .replace("https://", "")
+      .replace("http://", "")
+      .replace("www.", "");
 
-    const w = testImg.naturalWidth;
-    const h = testImg.naturalHeight;
+    const firstWord = clean.substring(0, 10);
 
-    // 🚫 Reject bad images
-    if (
-      w < 32 ||
-      h < 32 ||
-      src.endsWith(".ico") // optional but VERY effective
-    ) {
-      index++;
-      tryNext();
-      return;
-    }
+    const customIcon = chrome.runtime.getURL(`icons/${firstWord}.png`);
+    const defaultIcon = chrome.runtime.getURL("icons/default.png");
 
-    // ✅ Accept
-    img.src = src;
-  };
+    const duckIcon = domain
+      ? `https://icons.duckduckgo.com/ip3/${domain}.ico`
+      : null;
 
-  testImg.onerror = () => {
-    clearTimeout(timeout);
-    index++;
-    tryNext();
-  };
+    const googleIcon = domain
+      ? `https://www.google.com/s2/favicons?sz=64&domain=${domain}`
+      : null;
 
-  testImg.src = src;
-}
+    const sources = [customIcon, duckIcon, googleIcon].filter(Boolean);
 
-tryNext();
+    loadValidIcon(img, sources, defaultIcon);
 
-}
+    img.title = node.title;
 
-chrome.bookmarks.getTree((tree) => {
-const root = tree?.[0]?.children || [];
+    img.addEventListener("click", () => {
+      window.open(node.url, "_blank");
+    });
 
-function walk(nodes) {
-  nodes.forEach((node) => {
-    if (node.url) {
-      const img = document.createElement("img");
+    return img;
+  }
 
-      let domain = "";
-      try {
-        domain = new URL(node.url).hostname;
-      } catch {}
+  // ---------------- FOLDER ICON ----------------
+  function createFolder(node) {
+    const img = document.createElement("img");
 
-      let clean = node.url.toLowerCase()
-        .replace("https://", "")
-        .replace("http://", "")
-        .replace("www.", "");
+    img.src = chrome.runtime.getURL("icons/folder.png");
+    img.title = node.title;
+    img.style.cursor = "pointer";
 
-      const firstWord = clean.substring(0, 10);
+    img.addEventListener("click", () => {
+      currentFolder = node;
+      renderFolder(node);
+    });
 
-      const customIcon = chrome.runtime.getURL(`icons/${firstWord}.png`);
-      const defaultIcon = chrome.runtime.getURL("icons/default.png");
+    return img;
+  }
 
-      const duckIcon = domain
-        ? `https://icons.duckduckgo.com/ip3/${domain}.ico`
-        : null;
+  // ---------------- BACK BUTTON ----------------
+  function createBackButton() {
+    const img = document.createElement("img");
 
-      const googleIcon = domain
-        ? `https://www.google.com/s2/favicons?sz=64&domain=${domain}`
-        : null;
+    img.src = chrome.runtime.getURL("icons/backbutton.png");
+    img.title = "Back";
+    img.style.cursor = "pointer";
 
-      const sources = [
-        customIcon,
-        duckIcon,
-        googleIcon
-      ].filter(Boolean);
+    img.addEventListener("click", () => {
+      currentFolder = null;
+      renderRoot();
+    });
 
-      loadValidIcon(img, sources, defaultIcon);
+    return img;
+  }
 
-      img.addEventListener("click", () => {
-        window.open(node.url, "_blank");
-      });
+  // ---------------- LEVEL 1 VIEW ----------------
+  function renderRoot() {
+    dock.innerHTML = "";
 
-      dock.appendChild(img);
-    }
+    root.forEach((node) => {
+      if (node.url) {
+        dock.appendChild(createBookmark(node));
+      } else if (node.children) {
+        dock.appendChild(createFolder(node));
+      }
+    });
+  }
 
-    if (node.children) {
-      walk(node.children);
-    }
+  // ---------------- LEVEL 2 VIEW ----------------
+  function renderFolder(folder) {
+    dock.innerHTML = "";
+
+    dock.appendChild(createBackButton());
+
+    (folder.children || []).forEach((node) => {
+      if (node.url) {
+        dock.appendChild(createBookmark(node));
+      } else if (node.children) {
+        dock.appendChild(createFolder(node));
+      }
+    });
+  }
+
+  // ---------------- INIT ----------------
+  chrome.bookmarks.getTree((tree) => {
+    const bar = tree?.[0]?.children?.find(n => n.id === "1");
+    root = bar?.children || [];
+
+    renderRoot();
   });
-}
-
-walk(root);
-
-});
 });

@@ -26,40 +26,124 @@
       object-fit: cover;
     }
 
-    /* TOP RIGHT DOCK */
+    /* TOP BAR CONTAINER (full width now) */
     #top-dock {
       position: fixed;
       top: 10px;
-      right: 10px;
+      left: 0;
+      right: 0;
       z-index: 9999;
 
       display: flex;
       align-items: center;
-      gap: 10px;
     }
 
+    /* LEFT SPACER (balances center) */
+    #dock-left {
+      flex: 1;
+    }
+
+    /* CENTER BOOKMARK BAR */
     #app-dock {
       display: flex;
       align-items: center;
       gap: 8px;
 
-      background: rgba(0,0,0,0.25);
-      backdrop-filter: blur(10px);
       padding: 6px 8px;
       border-radius: 10px;
+
+      pointer-events: auto;
+
+      /* 🌿 much lighter glass effect */
+      background: rgba(0, 40, 20, 0.08);
+      backdrop-filter: blur(1px);
+
+      /* softer edge so it blends into wallpaper */
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    #app-dock img,
-    #settings-btn {
+    /* RIGHT SETTINGS AREA */
+    #dock-right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 10px;
+    }
+
+    /* WRAPPERS INSIDE DOCK */
+    #app-dock > div {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    /* ICONS */
+    #app-dock img {
       width: 26px;
       height: 26px;
       cursor: pointer;
-      transition: transform 0.15s ease;
+
+      transition: 
+        transform 0.15s ease,
+        filter 0.2s ease,
+        opacity 0.2s ease;
+
+      flex-shrink: 0;
+      display: block;
+
+      /* 🌿 muted “Littleroot green” look */
+      filter: 
+        brightness(0.55)
+        saturate(0.4)
+        sepia(0.6)
+        hue-rotate(90deg);
+      
+      opacity: 0.85;
     }
 
+    /* 🌟 reveal true icon colors on hover */
+    #app-dock img:hover {
+      filter: none;
+      opacity: 1;
+      transform: scale(1.15);
+      box-shadow: 0 0 8px rgba(120, 255, 120, 0.4);
+    }
+
+    /* SETTINGS ICON */
+    #settings-btn {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+
+      display: block;
+    }
+
+    /* hover */
     #app-dock img:hover,
     #settings-btn:hover {
       transform: scale(1.15);
+    }
+
+    #search-container {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+    }
+
+    #search {
+      width: 420px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+
+      background: rgba(0, 40, 20, 0.10);
+      backdrop-filter: blur(10px);
+
+      color: white;
+      outline: none;
     }
   </style>
 </head>
@@ -73,8 +157,17 @@
 
   <!-- TOP DOCK -->
   <div id="top-dock">
+    <div id="dock-left"></div>
+
     <div id="app-dock"></div>
-    <img src="icons/settings.png" id="settings-btn">
+
+    <div id="dock-right">
+      <img src="icons/settings.png" id="settings-btn">
+    </div>
+  </div>
+
+  <div id="search-container">
+    <input id="search" placeholder="Search or type a URL..." />
   </div>
 
   <!-- SCRIPT -->
