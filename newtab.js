@@ -350,52 +350,124 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-async function loadWeather() {
-  const tempEl = document.getElementById("temp");
-  const conditionEl = document.getElementById("condition");
-  const extraEl = document.getElementById("extra");
+// async function loadWeather() {
+//   const tempEl = document.getElementById("temp");
+//   const conditionEl = document.getElementById("condition");
+//   const extraEl = document.getElementById("extra");
+
+//   try {
+//     // 📍 Richardson, TX approx coords
+//     const lat = 32.9483;
+//     const lon = -96.7299;
+
+//     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
+
+//     const res = await fetch(url);
+//     const data = await res.json();
+
+//     const weather = data.current_weather;
+//     const temp = weather.temperature;
+//     const code = weather.weathercode;
+
+//     // 🌤️ simple condition mapping
+//     const conditions = {
+//       0: "Clear Sky",
+//       1: "Mostly Clear",
+//       2: "Partly Cloudy",
+//       3: "Cloudy",
+//       45: "Fog",
+//       48: "Fog",
+//       51: "Drizzle",
+//       61: "Rain",
+//       71: "Snow",
+//       80: "Rain Showers",
+//       95: "Thunderstorm"
+//     };
+
+//     tempEl.textContent = `${Math.round(temp)}°F`;
+//     conditionEl.textContent = conditions[code] || "Unknown";
+
+//     // fallback humidity (optional safe default)
+//     extraEl.textContent = "Local Weather";
+
+//   } catch (e) {
+//     tempEl.textContent = "--°F";
+//     conditionEl.textContent = "Weather Error";
+//     extraEl.textContent = "";
+//   }
+// }
+
+// loadWeather();
+// setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
+
+async function loadForecast() {
+  const forecastEl = document.getElementById("forecast");
+  if (!forecastEl) return;
 
   try {
-    // 📍 Richardson, TX approx coords
     const lat = 32.9483;
     const lon = -96.7299;
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
+    const url =
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=${lat}` +
+      `&longitude=${lon}` +
+      `&daily=weathercode,temperature_2m_max` +
+      `&temperature_unit=fahrenheit` +
+      `&timezone=auto`;
 
     const res = await fetch(url);
     const data = await res.json();
 
-    const weather = data.current_weather;
-    const temp = weather.temperature;
-    const code = weather.weathercode;
+    const daily = data.daily;
 
-    // 🌤️ simple condition mapping
     const conditions = {
-      0: "Clear Sky",
-      1: "Mostly Clear",
-      2: "Partly Cloudy",
-      3: "Cloudy",
-      45: "Fog",
-      48: "Fog",
-      51: "Drizzle",
-      61: "Rain",
-      71: "Snow",
-      80: "Rain Showers",
-      95: "Thunderstorm"
+      0: "sunny",
+      1: "sunny",
+      2: "cloudy",
+      3: "cloudy",
+
+      45: "cloudy", // fog merged into cloudy
+      48: "cloudy", // fog merged into cloudy
+
+      51: "rain",
+      61: "rain",
+      80: "rain",
+      95: "rain",   // storm merged into rain
+
+      71: "snow"
     };
 
-    tempEl.textContent = `${Math.round(temp)}°F`;
-    conditionEl.textContent = conditions[code] || "Unknown";
+    forecastEl.innerHTML = "";
 
-    // fallback humidity (optional safe default)
-    extraEl.textContent = "Local Weather";
+    for (let i = 0; i < 7; i++) {
+      const temp = Math.round(daily.temperature_2m_max[i]);
+      const code = daily.weathercode[i];
+      const icon = conditions[code] || "unknown";
+
+      const dayEl = document.createElement("div");
+      dayEl.style.display = "flex";
+      dayEl.style.alignItems = "center";
+      dayEl.style.gap = "6px";
+
+      const img = document.createElement("img");
+      img.src = `icons/${icon}.png`;
+      img.style.width = "18px";
+      img.style.height = "18px";
+
+      const label = document.createElement("div");
+      label.textContent = `${temp}°F`;
+
+      dayEl.appendChild(img);
+      dayEl.appendChild(label);
+
+      forecastEl.appendChild(dayEl);
+    }
 
   } catch (e) {
-    tempEl.textContent = "--°F";
-    conditionEl.textContent = "Weather Error";
-    extraEl.textContent = "";
+    console.error("Forecast error:", e);
   }
 }
 
-loadWeather();
-setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
+loadForecast();
+setInterval(loadForecast, 60 * 60 * 1000); // update hourly

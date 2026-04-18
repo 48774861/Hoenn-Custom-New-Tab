@@ -266,12 +266,12 @@
     #clock {
       font-family: "LeafFont", monospace;
 
-      font-size: 30px;
+      font-size: 2.5vw;
       color: #7ba569;
 
       padding: 6px 10px;
 
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(0px);
 
       text-shadow: 0 1px 0 rgba(0,0,0,0.6);
 
@@ -281,7 +281,7 @@
       text-align: right;
     }
 
-    #weather {
+    /* #weather {
       font-family: "LeafFont", monospace;
       color: #7ba569;
 
@@ -313,6 +313,30 @@
     #extra {
       font-size: 12px;
       opacity: 0.7;
+    } */
+     #forecast {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      z-index: 9999;
+
+      font-family: "LeafFont", monospace;
+      color: #7ba569;
+
+      padding: 6px 8px;
+      border-radius: 10px;
+
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(2px);
+
+      text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+
+      user-select: none;
     }
   </style>
 </head>
@@ -327,11 +351,12 @@
   <!-- TOP DOCK -->
   <div id="top-dock">
     <div id="dock-left">
-      <div id="weather">
+      <div id="forecast"></div>
+      <!-- <div id="weather">
         <div id="temp">--°F</div>
         <div id="condition">Loading...</div>
         <div id="extra">Humidity: --%</div>
-      </div>
+      </div> -->
     </div>
 
     <div id="app-dock"></div>
