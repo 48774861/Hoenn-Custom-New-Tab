@@ -322,3 +322,30 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("click", () => wiggle("medium"));
   searchInput.addEventListener("focus", () => wiggle("medium"));
 });
+
+function updateClock() {
+  const clock = document.getElementById("clock");
+  if (!clock) return;
+
+  const now = new Date();
+
+  // 🗓️ Date: Month Day, Year
+  const date = now.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+
+  // 🕒 Time: US format with seconds
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  clock.innerHTML = `${date}<br>${time}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
