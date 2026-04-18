@@ -349,3 +349,53 @@ function updateClock() {
 
 setInterval(updateClock, 1000);
 updateClock();
+
+async function loadWeather() {
+  const tempEl = document.getElementById("temp");
+  const conditionEl = document.getElementById("condition");
+  const extraEl = document.getElementById("extra");
+
+  try {
+    // 📍 Richardson, TX approx coords
+    const lat = 32.9483;
+    const lon = -96.7299;
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const weather = data.current_weather;
+    const temp = weather.temperature;
+    const code = weather.weathercode;
+
+    // 🌤️ simple condition mapping
+    const conditions = {
+      0: "Clear Sky",
+      1: "Mostly Clear",
+      2: "Partly Cloudy",
+      3: "Cloudy",
+      45: "Fog",
+      48: "Fog",
+      51: "Drizzle",
+      61: "Rain",
+      71: "Snow",
+      80: "Rain Showers",
+      95: "Thunderstorm"
+    };
+
+    tempEl.textContent = `${Math.round(temp)}°F`;
+    conditionEl.textContent = conditions[code] || "Unknown";
+
+    // fallback humidity (optional safe default)
+    extraEl.textContent = "Local Weather";
+
+  } catch (e) {
+    tempEl.textContent = "--°F";
+    conditionEl.textContent = "Weather Error";
+    extraEl.textContent = "";
+  }
+}
+
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
