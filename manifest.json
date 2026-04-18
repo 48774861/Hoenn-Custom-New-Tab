@@ -11,9 +11,14 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["wallpaper.mp4", "settings.png"],
+      "resources": [
+        "wallpaper.mp4",
+        "settings.png",
+        "icons/*"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
+
   "permissions": ["bookmarks", "downloads"]
 }
