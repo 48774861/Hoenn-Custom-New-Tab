@@ -57,7 +57,7 @@ function handleSearch(input) {
   const results = searchBookmarks(query);
 
   if (results.length > 0) {
-    window.open(results[0].url, "_blank");
+    navigate(results[0].url);
   } else {
     window.location.href =
       "https://www.google.com/search?q=" +
@@ -69,6 +69,16 @@ function handleSearch(input) {
 function getOmniboxQuery() {
   const params = new URLSearchParams(window.location.search);
   return params.get("q");
+}
+
+// Navigate to a new link.
+function navigate(url) {
+  // document.body.style.transition = "opacity 0.05s ease";
+  // document.body.style.opacity = "0";
+  
+  setTimeout(() => {
+    window.location.href = url;
+  }, 0);
 }
 
 // ---------------- MAIN ----------------
@@ -84,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------------- SETTINGS BUTTON ----------------
   btn.addEventListener("click", () => {
-    chrome.tabs.create({ url: "chrome://settings/" });
+    chrome.tabs.update({ url: "chrome://settings/" });
   });
 
   // ---------------- ICON LOADER ----------------
@@ -167,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     img.title = node.title;
 
     img.addEventListener("click", () => {
-      window.open(node.url, "_blank");
+      navigate(node.url);
     });
 
     return img;
@@ -258,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const results = searchBookmarks(query);
 
       if (results.length > 0) {
-        window.open(results[0].url, "_blank");
+        navigate(results[0].url);
       } else {
         window.location.href =
           "https://www.google.com/search?q=" +
