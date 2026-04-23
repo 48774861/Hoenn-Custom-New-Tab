@@ -387,6 +387,37 @@
       transform: scale(1.15);
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
     }
+
+    .temp-text {
+      font-weight: 600;
+      line-height: 1;
+      display: inline-block;
+
+      background: linear-gradient(
+        160deg,
+        var(--start-color, #edd8ac) 0%,
+        var(--start-color, #edd8ac) var(--gradient, 50%),
+        var(--end-color, #ff3838) 100%
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      /* IMPORTANT fallback so text never disappears */
+      color: #333;
+
+      -webkit-text-fill-color: transparent;
+
+      text-shadow: 0 0 0 rgba(0,0,0,0.15);
+
+      transition: all 0.25s ease;
+    }
+
+    .temp-text:hover {
+      -webkit-text-fill-color: var(--end-color, #ff3838);
+      color: var(--end-color, #ff3838);
+      background: none;
+    }
   </style>
 </head>
 

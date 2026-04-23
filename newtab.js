@@ -342,7 +342,6 @@ function lerp(a, b, t) {
 }
 
 function getTempGradientSpan(temp) {
-  temp = 110;
 
   const maxTemp = 110;
   const minTemp = 10;
@@ -379,28 +378,13 @@ function getTempGradientSpan(temp) {
   const endColor = `rgb(${r}, ${g}, ${b})`;
 
   return `
-    <span style="
-      font-weight: 600;
-      line-height: 1;
-
-      background: linear-gradient(
-        160deg,
-        ${startColor} 0%,
-        ${startColor} ${gradient}%,
-        ${endColor} 100%
-      );
-
-      -webkit-background-clip: text;
-      background-clip: text;
-
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-
-      display: inline-block;
-
-      /* helps reduce perceived “hollow” look on some screens */
-      text-shadow: 0 0 0 rgba(0,0,0,0.15);
-    ">
+    <span class="temp-text"
+      style="
+        --start-color: ${startColor || '#edd8ac'};
+        --end-color: ${endColor || '#ff3838'};
+        --gradient: ${gradient ?? 50}%;
+      "
+    >
       ${temp}°F
     </span>
   `;
@@ -419,7 +403,7 @@ async function loadForecast() {
   // Header
   const header = document.createElement("div");
   header.className = "weather-plank weather-header";
-  header.innerHTML = `<div style="font-weight:800">Weather Forecast</div>`;
+  header.innerHTML = `<div style="font-weight:800;font-size:24px">Weather Forecast</div>`;
   forecastEl.appendChild(header);
 
   const sway = document.createElement("div");
@@ -512,57 +496,5 @@ async function loadForecast() {
   }
 }
 
-async function loadWeather() {
-  const tempEl = document.getElementById("temp");
-  const conditionEl = document.getElementById("condition");
-  const extraEl = document.getElementById("extra");
-
-  try {
-    // 📍 Richardson, TX approx coords
-    const lat = 32.9483;
-    const lon = -96.7299;
-
-
-    const url = `https://api.open-meteo.com/v1/forecast
-      ?latitude=${lat}
-      &longitude=${lon}
-      &current_weather=true
-      &temperature_unit=fahrenheit`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const weather = data.current_weather;
-    const temp = weather.temperature;
-    const code = weather.weathercode;
-
-    // 🌤️ simple condition mapping
-    const conditions = {
-      0: "Clear Sky",
-      1: "Mostly Clear",
-      2: "Partly Cloudy",
-      3: "Cloudy",
-      45: "Fog",
-      48: "Fog",
-      51: "Drizzle",
-      61: "Rain",
-      71: "Snow",
-      80: "Rain Showers",
-      95: "Thunderstorm"
-    };
-
-    tempEl.textContent = `${Math.round(temp)}°F`;
-    conditionEl.textContent = conditions[code] || "Unknown";
-
-    // fallback humidity (optional safe default)
-    extraEl.textContent = "Local Weather";
-
-  } catch (e) {
-    tempEl.textContent = "--°F";
-    conditionEl.textContent = "Weather Error";
-    extraEl.textContent = "";
-  }
-}
-
 loadForecast();
-setInterval(loadWeather, 10 * 60 * 1000);
+setInterval(loadForecast, 10 * 60 * 1000);
