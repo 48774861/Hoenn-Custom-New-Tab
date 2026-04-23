@@ -403,7 +403,7 @@ async function loadForecast() {
   // Header
   const header = document.createElement("div");
   header.className = "weather-plank weather-header";
-  header.innerHTML = `<div style="font-weight:800;font-size:24px">Weather Forecast</div>`;
+  header.innerHTML = `<div style="font-weight:800;font-size: clamp(14px, 2.2vw, 28px);">Weather Forecast</div>`;
   forecastEl.appendChild(header);
 
   const sway = document.createElement("div");
@@ -462,11 +462,11 @@ async function loadForecast() {
 
           <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
 
-            <div style="font-size:16px;font-weight:700;line-height:1.1;">
+            <div style="font-size: clamp(8px, 1.4vw, 16px);font-weight:700;line-height:1.1;">
               ${month} ${day}, ${year}
             </div>
 
-            <div style="font-size:12px;opacity:0.7;line-height:1.1;margin-top:-2px;">
+            <div style="font-size: clamp(6px, 1.2vw, 12px);;opacity:0.7;line-height:1.1;margin-top:-2px;">
               ${weekday}
             </div>
 
@@ -474,7 +474,7 @@ async function loadForecast() {
 
           <!-- RIGHT SIDE (true vertical center) -->
           <div style="display:flex;align-items:center;justify-content:flex-end;">
-            <div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;">
+            <div style="display:flex;align-items:center;gap:8px;font-size: clamp(9px, 1.6vw, 18px);font-weight:600;">
               <div class="temp-group">
                 ${getTempGradientSpan(temp)}
                 <span class="temp-icon">${icon}</span>
