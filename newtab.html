@@ -6,23 +6,17 @@
   <link rel="icon" type="image/png" href="icons/may_bike.png">
 
   <style>
-    /* =========================
-      🌍 BASE LAYOUT
-    ========================= */
-
+    /* ========================= 🌍 BASE LAYOUT ========================= */
     html, body {
       margin: 0;
       padding: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background: black;
+      background: #000;
     }
 
-    /* =========================
-      🎥 VIDEO BACKGROUND
-    ========================= */
-
+    /* ========================= 🎥 VIDEO BACKGROUND ========================= */
     #bg-video {
       position: fixed;
       top: 50%;
@@ -33,18 +27,13 @@
       object-fit: cover;
     }
 
-    /* =========================
-      🧭 TOP DOCK LAYOUT
-    ========================= */
-
+    /* ========================= 🧭 TOP DOCK LAYOUT ========================= */
     #top-dock {
       position: fixed;
-      /* top: 5px; */
       padding-top: 6px;
       left: 0;
       right: 0;
       z-index: 9999;
-
       display: flex;
       align-items: center;
     }
@@ -56,29 +45,22 @@
     #dock-right {
       flex: 1;
       display: flex;
-      flex-direction: column;   /* 👈 stack vertically */
-      align-items: flex-end;    /* 👈 keep right aligned */
+      flex-direction: column;
+      align-items: flex-end;
       padding-right: 10px;
       gap: 6px;
     }
 
-    /* =========================
-      📌 BOOKMARK BAR
-    ========================= */
-
+    /* ========================= 📌 BOOKMARK BAR ========================= */
     #app-dock {
       display: flex;
       align-items: center;
       gap: 8px;
-
       padding: 6px 8px;
       border-radius: 10px;
-
       pointer-events: auto;
-
       background: rgba(0, 40, 20, 0.08);
       backdrop-filter: blur(1px);
-
       border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
@@ -86,9 +68,7 @@
       width: 26px;
       height: 26px;
       cursor: pointer;
-
       transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
-
       filter: brightness(0.55) saturate(0.4) sepia(0.6) hue-rotate(90deg);
       opacity: 0.85;
     }
@@ -99,29 +79,15 @@
       transform: scale(1.15);
     }
 
-    /* =========================
-      ⚙️ SETTINGS BUTTON
-    ========================= */
-
+    /* ========================= ⚙️ SETTINGS BUTTON ========================= */
     #settings-btn {
       width: 26px;
       height: 26px;
       cursor: pointer;
-
       display: block;
-
-      /* match bookmark icons exactly */
-      filter:
-        brightness(0.55)
-        saturate(0.4)
-        sepia(0.6)
-        hue-rotate(90deg);
-
+      filter: brightness(0.55) saturate(0.4) sepia(0.6) hue-rotate(90deg);
       opacity: 0.85;
-
-      transition: transform 0.15s ease,
-                  filter 0.2s ease,
-                  opacity 0.2s ease;
+      transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
     }
 
     #settings-btn:hover {
@@ -130,10 +96,7 @@
       transform: scale(1.15);
     }
 
-    /* =========================
-      🔍 SEARCH POSITION
-    ========================= */
-
+    /* ========================= 🔍 SEARCH POSITION ========================= */
     #search-container {
       position: fixed;
       top: 50%;
@@ -142,11 +105,7 @@
       z-index: 9999;
     }
 
-    /* =========================
-      🪵 WOODEN SIGN SEARCH BAR
-      (3D WORLD SPACE OBJECT)
-    ========================= */
-
+    /* ========================= 🪵 SEARCH BAR ========================= */
     @font-face {
       font-family: "PixelFont";
       src: url("fonts/Realwood-Regular.otf") format("truetype");
@@ -160,85 +119,47 @@
     #search {
       width: 450px;
       height: 38px;
-
       padding: 8px 12px;
-
       font-family: "PixelFont", monospace;
       font-size: 18px;
       text-align: center;
-
       color: #edd8ac;
-
       background: url("icons/wood-texture.png");
       background-size: cover;
-
       border: 3px solid #292b1f;
-      border-radius: 0;
-
       outline: none;
-
-      box-shadow:
-        inset 0 2px 4px rgba(0,0,0,0.35),
-        0 4px 10px rgba(0,0,0,0.4);
-
-      text-shadow:
-        0 1px 0 rgba(0, 0, 0, 0.5),
-        0 -1px 0 rgba(255, 255, 255, 0.1);
-
-      /* 🌲 BASE 3D SIGN POSITION */
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.4);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.5), 0 -1px 0 rgba(255,255,255,0.1);
       transform: perspective(600px) rotateY(-10deg) skewY(-12deg);
       transform-origin: center;
     }
-
-    /* =========================
-      ✏️ PLACEHOLDER TEXT
-    ========================= */
 
     #search::placeholder {
       color: rgba(230, 211, 179, 0.6);
       text-align: center;
     }
 
-    /* =========================
-      🌬️ WIGGLE ANIMATION
-      (ALIGNED TO 3D SIGN)
-    ========================= */
-
-    /* =========================
-      🌬️ SOFT WIGGLE (barely moving)
-    ========================= */
+    /* ========================= ANIMATIONS ========================= */
     @keyframes wiggleSoft {
-      0% {
+      0%, 100% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-3.8deg);
       }
       50% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4.2deg);
       }
-      100% {
-        transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-3.8deg);
-      }
     }
 
-    /* =========================
-      🌿 NORMAL WIGGLE (your default feel)
-    ========================= */
     @keyframes wiggle {
-      0% {
+      0%, 100% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
       }
       50% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-5deg);
       }
-      100% {
-        transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
-      }
     }
 
-    /* =========================
-      ⚡ FAST WIGGLE (slightly stronger but controlled)
-    ========================= */
     @keyframes wiggleFast {
-      0% {
+      0%, 100% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
       }
       25% {
@@ -250,14 +171,7 @@
       75% {
         transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-5deg);
       }
-      100% {
-        transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
-      }
     }
-
-    /* =========================
-      🌿 HOVER POLISH
-    ========================= */
 
     #search:hover {
       filter: brightness(1.05);
@@ -265,112 +179,188 @@
 
     #clock {
       font-family: "LeafFont", monospace;
-
       font-size: 2.5vw;
       color: #7ba569;
-
       padding: 6px 10px;
-
-      backdrop-filter: blur(0px);
-
       text-shadow: 0 1px 0 rgba(0,0,0,0.6);
-
       user-select: none;
-
       line-height: 1.3;
       text-align: right;
     }
 
-    /* #weather {
-      font-family: "LeafFont", monospace;
-      color: #7ba569;
-
-      padding: 6px 10px;
-
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(2px);
-
-      border-radius: 8px;
-
-      text-shadow: 0 1px 0 rgba(0,0,0,0.6);
-
-      user-select: none;
-
-      line-height: 1.3;
-      font-size: 14px;
-    }
-
-    #temp {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    #condition {
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    #extra {
-      font-size: 12px;
-      opacity: 0.7;
-    } */
-     /* #forecast {
+    /* ========================= FORECAST ========================= */
+    #forecast {
       position: fixed;
-      top: 10px;
-      left: 10px;
-
+      top: 30px;
+      left: 30px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-
       z-index: 9999;
-
       font-family: "LeafFont", monospace;
       color: #7ba569;
-
       padding: 6px 8px;
       border-radius: 10px;
-
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(2px);
-
       text-shadow: 0 1px 0 rgba(0,0,0,0.6);
-
-      user-select: none;
-    } */
+      animation: windSway 6s ease-in-out infinite;
+      transform-origin: top center;
+    }
 
     .weather-plank {
-      width: 220px;
-      height: 60px;
-
+      position: relative;
+      width: fit-content;
+      padding: 8px 10px;
       background: url("icons/wood-texture.png");
       background-size: cover;
-
       border: 2px solid #2a2b1f;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
       font-family: "PixelFont";
       color: #edd8ac;
-
       text-shadow: 0 1px 0 rgba(0,0,0,0.5);
-
-      margin-bottom: 8px;
-
       opacity: 0;
       transform: translateY(-10px);
       animation: dropIn 0.4s ease forwards;
     }
 
-    .weather-plank:nth-child(1) { animation-delay: 0.05s; }
-    .weather-plank:nth-child(2) { animation-delay: 0.10s; }
-    .weather-plank:nth-child(3) { animation-delay: 0.15s; }
-    .weather-plank:nth-child(4) { animation-delay: 0.20s; }
-    .weather-plank:nth-child(5) { animation-delay: 0.25s; }
-    .weather-plank:nth-child(6) { animation-delay: 0.30s; }
-    .weather-plank:nth-child(7) { animation-delay: 0.35s; }
+    .weather-plank::before,
+    .weather-plank::after {
+      content: "";
+      position: absolute;
+      top: -14px;
+      width: 2px;
+      height: 14px;
+      background: linear-gradient(to bottom, #5a3e1b, #c8a976);
+      opacity: 0.9;
+      box-shadow: 0 -2px 0 #2a2b1f;
+    }
+
+    .weather-plank::before {
+      left: 16px;
+      transform: rotate(-1deg);
+    }
+
+    .weather-plank::after {
+      right: 16px;
+      transform: rotate(1deg);
+    }
+
+    @keyframes windSway {
+      0% { transform: translateX(0px) rotate(0deg); }
+
+      1.5625% { transform: translateX(-0.2px) rotate(-0.15deg); }
+      3.125%  { transform: translateX(-0.4px) rotate(-0.3deg); }
+      4.6875% { transform: translateX(-0.6px) rotate(-0.45deg); }
+      6.25%   { transform: translateX(-0.8px) rotate(-0.6deg); }
+      7.8125% { transform: translateX(-1.0px) rotate(-0.75deg); }
+      9.375%  { transform: translateX(-1.2px) rotate(-0.9deg); }
+      10.9375%{ transform: translateX(-1.4px) rotate(-1.05deg); }
+      12.5%   { transform: translateX(-1.6px) rotate(-1.2deg); }
+      14.0625%{ transform: translateX(-1.8px) rotate(-1.35deg); }
+      15.625% { transform: translateX(-2.0px) rotate(-1.5deg); }
+      17.1875%{ transform: translateX(-2.2px) rotate(-1.65deg); }
+      18.75%  { transform: translateX(-2.4px) rotate(-1.8deg); }
+      20.3125%{ transform: translateX(-2.5px) rotate(-1.95deg); }
+      21.875% { transform: translateX(-2.6px) rotate(-2.05deg); }
+      23.4375%{ transform: translateX(-2.7px) rotate(-2.1deg); }
+      25%     { transform: translateX(-2.8px) rotate(-2.1deg); }
+
+      26.5625%{ transform: translateX(-2.7px) rotate(-2.0deg); }
+      28.125% { transform: translateX(-2.6px) rotate(-1.95deg); }
+      29.6875%{ transform: translateX(-2.5px) rotate(-1.85deg); }
+      31.25%  { transform: translateX(-2.4px) rotate(-1.8deg); }
+      32.8125%{ transform: translateX(-2.2px) rotate(-1.65deg); }
+      34.375% { transform: translateX(-2.0px) rotate(-1.5deg); }
+      35.9375%{ transform: translateX(-1.8px) rotate(-1.35deg); }
+      37.5%   { transform: translateX(-1.6px) rotate(-1.2deg); }
+      39.0625%{ transform: translateX(-1.4px) rotate(-1.05deg); }
+      40.625% { transform: translateX(-1.2px) rotate(-0.9deg); }
+      42.1875%{ transform: translateX(-1.0px) rotate(-0.75deg); }
+      43.75%  { transform: translateX(-0.8px) rotate(-0.6deg); }
+      45.3125%{ transform: translateX(-0.6px) rotate(-0.45deg); }
+      46.875% { transform: translateX(-0.4px) rotate(-0.3deg); }
+      48.4375%{ transform: translateX(-0.2px) rotate(-0.15deg); }
+
+      50% { transform: translateX(0px) rotate(0deg); }
+
+      51.5625%{ transform: translateX(0.2px) rotate(0.15deg); }
+      53.125% { transform: translateX(0.4px) rotate(0.3deg); }
+      54.6875%{ transform: translateX(0.6px) rotate(0.45deg); }
+      56.25%  { transform: translateX(0.8px) rotate(0.6deg); }
+      57.8125%{ transform: translateX(1.0px) rotate(0.75deg); }
+      59.375% { transform: translateX(1.2px) rotate(0.9deg); }
+      60.9375%{ transform: translateX(1.4px) rotate(1.05deg); }
+      62.5%   { transform: translateX(1.6px) rotate(1.2deg); }
+      64.0625%{ transform: translateX(1.8px) rotate(1.35deg); }
+      65.625% { transform: translateX(2.0px) rotate(1.5deg); }
+      67.1875%{ transform: translateX(2.2px) rotate(1.65deg); }
+      68.75%  { transform: translateX(2.4px) rotate(1.8deg); }
+      70.3125%{ transform: translateX(2.5px) rotate(1.95deg); }
+      71.875% { transform: translateX(2.6px) rotate(2.05deg); }
+      73.4375%{ transform: translateX(2.7px) rotate(2.1deg); }
+      75%     { transform: translateX(2.8px) rotate(2.1deg); }
+
+      76.5625%{ transform: translateX(2.7px) rotate(2.0deg); }
+      78.125% { transform: translateX(2.6px) rotate(1.95deg); }
+      79.6875%{ transform: translateX(2.5px) rotate(1.85deg); }
+      81.25%  { transform: translateX(2.4px) rotate(1.8deg); }
+      82.8125%{ transform: translateX(2.2px) rotate(1.65deg); }
+      84.375% { transform: translateX(2.0px) rotate(1.5deg); }
+      85.9375%{ transform: translateX(1.8px) rotate(1.35deg); }
+      87.5%   { transform: translateX(1.6px) rotate(1.2deg); }
+      89.0625%{ transform: translateX(1.4px) rotate(1.05deg); }
+      90.625% { transform: translateX(1.2px) rotate(0.9deg); }
+      92.1875%{ transform: translateX(1.0px) rotate(0.75deg); }
+      93.75%  { transform: translateX(0.8px) rotate(0.6deg); }
+      95.3125%{ transform: translateX(0.6px) rotate(0.45deg); }
+      96.875% { transform: translateX(0.4px) rotate(0.3deg); }
+      98.4375%{ transform: translateX(0.2px) rotate(0.15deg); }
+
+      100% { transform: translateX(0px) rotate(0deg); }
+    }
+    @keyframes sway {
+      0% {
+        transform: scale(1.4) translateX(0px) rotate(0deg);
+        animation-timing-function: ease-in;
+      }
+
+      12.5% {
+        transform: scale(1.35) translateX(-1px) rotate(-1deg);
+        animation-timing-function: ease-out;
+      }
+
+      25% {
+        transform: scale(1.35) translateX(-2.5px) rotate(-2deg);
+        animation-timing-function: ease-in;
+      }
+
+      37.5% {
+        transform: scale(1.35) translateX(-1px) rotate(-1deg);
+        animation-timing-function: ease-out;
+      }
+
+      50% {
+        transform: scale(1.4) translateX(0px) rotate(0deg);
+        animation-timing-function: ease-out;
+      }
+
+      62.5% {
+        transform: scale(1.35) translateX(1px) rotate(1deg);
+        animation-timing-function: ease-out;
+      }
+
+      75% {
+        transform: scale(1.35) translateX(2.5px) rotate(2deg);
+        animation-timing-function: ease-out;
+      }
+
+      87.5% {
+        transform: scale(1.35) translateX(1px) rotate(1deg);
+        animation-timing-function: ease-in;
+      }
+
+      100% {
+        transform: scale(1.4) translateX(0px) rotate(0deg);
+      }
+    }
 
     @keyframes dropIn {
       to {
@@ -381,62 +371,34 @@
 
     .temp-color {
       font-weight: 600;
-
-      /* fallback base color */
       color: #c8b08a;
-
-      /* layered gradient system */
-      background:
-        /* 🌡️ temperature influence (origin bottom-right) */
-        linear-gradient(
-          340deg,
-
-          var(--temp-color, #ff6b6b) 0%,
-
-          var(--temp-color, #ff6b6b) calc(var(--split, 50%) - 10%),
-
-          rgba(200, 176, 138, 0) var(--split, 50%)
-        ),
-
-        /* 🪵 wood base */
-        linear-gradient(
-          160deg,
-          #c8b08a 0%,
-          #c8a976 100%
-        );
-
-      /* required for text gradient rendering */
+      background: linear-gradient(340deg, var(--temp-color,#ff6b6b), rgba(200,176,138,0) 50%),
+                  linear-gradient(160deg, #c8b08a, #c8a976);
       -webkit-background-clip: text;
       background-clip: text;
-
       -webkit-text-fill-color: transparent;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+      transition: 0.25s;
+    }
 
-      /* subtle depth so it doesn't feel flat */
-      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    .weather-plank:hover .temp-color {
+      -webkit-text-fill-color: var(--temp-color,#ff6b6b);
+      background: none;
+      transform: scale(1.15);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
     }
   </style>
 </head>
 
 <body>
 
-  <!-- VIDEO BACKGROUND -->
   <video autoplay muted loop id="bg-video">
     <source src="wallpaper.mp4" type="video/mp4">
   </video>
 
-  <!-- TOP DOCK -->
   <div id="top-dock">
-    <div id="dock-left">
-      <div id="forecast"></div>
-      <!-- <div id="weather">
-        <div id="temp">--°F</div>
-        <div id="condition">Loading...</div>
-        <div id="extra">Humidity: --%</div>
-      </div> -->
-    </div>
-
+    <div id="dock-left"><div id="forecast"></div></div>
     <div id="app-dock"></div>
-
     <div id="dock-right">
       <img src="icons/settings.png" id="settings-btn">
       <div id="clock"></div>
@@ -447,7 +409,6 @@
     <input id="search" placeholder="Searching the World of Pokémon!" />
   </div>
 
-  <!-- SCRIPT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script src="newtab.js"></script>
 

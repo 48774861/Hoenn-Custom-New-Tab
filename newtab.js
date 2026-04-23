@@ -73,9 +73,6 @@ function getOmniboxQuery() {
 
 // Navigate to a new link.
 function navigate(url) {
-  // document.body.style.transition = "opacity 0.05s ease";
-  // document.body.style.opacity = "0";
-  
   setTimeout(() => {
     window.location.href = url;
   }, 0.001);
@@ -87,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const dock = document.getElementById("app-dock");
 
   const searchInput = document.getElementById("search");
-  const topSearch = document.getElementById("top-search");
 
   let root = [];
   let currentFolder = null;
@@ -189,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     img.src = chrome.runtime.getURL("icons/folder.png");
     img.title = node.title;
-    img.style.cursor = "pointer";
 
     img.addEventListener("click", () => {
       currentFolder = node;
@@ -205,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     img.src = chrome.runtime.getURL("icons/backbutton.png");
     img.title = "Back";
-    img.style.cursor = "pointer";
 
     img.addEventListener("click", () => {
       currentFolder = null;
@@ -220,11 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
     dock.innerHTML = "";
 
     root.forEach(node => {
-      if (node.url) {
-        dock.appendChild(createBookmark(node));
-      } else if (node.children) {
-        dock.appendChild(createFolder(node));
-      }
+      if (node.url) dock.appendChild(createBookmark(node));
+      else if (node.children) dock.appendChild(createFolder(node));
     });
   }
 
@@ -235,11 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
     dock.appendChild(createBackButton());
 
     (folder.children || []).forEach(node => {
-      if (node.url) {
-        dock.appendChild(createBookmark(node));
-      } else if (node.children) {
-        dock.appendChild(createFolder(node));
-      }
+      if (node.url) dock.appendChild(createBookmark(node));
+      else if (node.children) dock.appendChild(createFolder(node));
     });
   }
 
@@ -252,12 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
     buildBookmarkIndex(bar?.children || []);
 
     renderRoot();
-
-    const q = getOmniboxQuery();
-    if (q) handleSearch(q);
   });
 
-  // ---------------- SEARCH BAR ----------------
+  // ---------------- SEARCH ----------------
   if (searchInput) {
     searchInput.addEventListener("keydown", (e) => {
       if (e.key !== "Enter") return;
@@ -267,9 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const results = searchBookmarks(query);
 
-      if (results.length > 0) {
-        navigate(results[0].url);
-      } else {
+      if (results.length > 0) navigate(results[0].url);
+      else {
         window.location.href =
           "https://www.google.com/search?q=" +
           encodeURIComponent(query);
@@ -277,15 +261,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---------------- 🔥 CLEAN RELIABLE FOCUS (FINAL FIX) ----------------
+  // ---------------- FOCUS FIX ----------------
   window.addEventListener("load", () => {
     const searchInput = document.getElementById("search");
-
     if (!searchInput) return;
 
     setTimeout(() => {
       searchInput.focus();
-
       const len = searchInput.value.length;
       searchInput.setSelectionRange(len, len);
     }, 250);
@@ -293,9 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+// ---------------- WIGGLE EFFECT ----------------
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("search");
-
   if (!searchInput) return;
 
   let lastTime = 0;
@@ -305,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const delta = now - lastTime;
     lastTime = now;
 
-    // smaller delta = faster typing
     if (delta < 80) return "fast";
     if (delta < 180) return "medium";
     return "slow";
@@ -324,29 +305,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  searchInput.addEventListener("keydown", () => {
-    const intensity = getIntensity();
-    wiggle(intensity);
-  });
-
+  searchInput.addEventListener("keydown", () => wiggle(getIntensity()));
   searchInput.addEventListener("click", () => wiggle("medium"));
   searchInput.addEventListener("focus", () => wiggle("medium"));
 });
 
+// ---------------- CLOCK ----------------
 function updateClock() {
   const clock = document.getElementById("clock");
   if (!clock) return;
 
   const now = new Date();
 
-  // 🗓️ Date: Month Day, Year
   const date = now.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric"
   });
 
-  // 🕒 Time: US format with seconds
   const time = now.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -360,6 +336,182 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function getTempGradientSpan(temp) {
+  temp = 110;
+
+  const maxTemp = 110;
+  const minTemp = 10;
+  const avgTemp = (maxTemp + minTemp) / 2.0;
+  const temp_in_range = Math.max(Math.min(maxTemp, temp), minTemp)
+  const t = (temp_in_range - minTemp) / (maxTemp - minTemp)
+  const far_from_avg = Math.pow(Math.abs(t - 0.5) * 2, 0.5);
+
+  // Optionals: you can tweak these if you want more/less intensity based on temp
+  const startColor = "#edd8ac"; // light brown
+  const gradient = 60 - far_from_avg*50;
+
+  const coldVivid = "#3a86ff";
+  const hotVivid  = "#ff3838";
+  const c1Hex = "#edd8ac";
+
+  const hexToRgb = (hex) => ({
+    r: parseInt(hex.slice(1, 3), 16),
+    g: parseInt(hex.slice(3, 5), 16),
+    b: parseInt(hex.slice(5, 7), 16),
+  });
+
+  const lerpColor = (a, b, t) => ({
+    r: Math.round(a.r + (b.r - a.r) * t),
+    g: Math.round(a.g + (b.g - a.g) * t),
+    b: Math.round(a.b + (b.b - a.b) * t),
+  });
+
+  const c1 = hexToRgb(c1Hex);
+  const c2 = hexToRgb(temp >= avgTemp ? hotVivid : coldVivid);
+
+  const { r, g, b } = lerpColor(c1, c2, far_from_avg);
+
+  const endColor = `rgb(${r}, ${g}, ${b})`;
+
+  return `
+    <span style="
+      font-weight: 600;
+      line-height: 1;
+
+      background: linear-gradient(
+        160deg,
+        ${startColor} 0%,
+        ${startColor} ${gradient}%,
+        ${endColor} 100%
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+
+      display: inline-block;
+
+      /* helps reduce perceived “hollow” look on some screens */
+      text-shadow: 0 0 0 rgba(0,0,0,0.15);
+    ">
+      ${temp}°F
+    </span>
+  `;
+}
+
+// ---------------- FORECAST ----------------
+async function loadForecast() {
+  const forecastEl = document.getElementById("forecast");
+  if (!forecastEl) return;
+
+  const weekdays = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const today = new Date().getDay();
+
+  forecastEl.innerHTML = "";
+
+  // Header
+  const header = document.createElement("div");
+  header.className = "weather-plank weather-header";
+  header.innerHTML = `<div style="font-weight:800">Weather Forecast</div>`;
+  forecastEl.appendChild(header);
+
+  const sway = document.createElement("div");
+  sway.className = "forecast-sway";
+
+  const stack = document.createElement("div");
+  stack.className = "forecast-stack";
+
+  sway.appendChild(stack);
+  forecastEl.appendChild(sway);
+
+  try {
+    const lat = 32.9483;
+    const lon = -96.7299;
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,weathercode&forecast_days=7&temperature_unit=fahrenheit`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const temps = data.daily.temperature_2m_max;
+    const codes = data.daily.weathercode;
+
+    const weatherIcons = {
+      0: "☀️",
+      1: "🌤️",
+      2: "⛅",
+      3: "☁️",
+      45: "🌫️",
+      48: "🌫️",
+      51: "🌦️",
+      61: "🌧️",
+      71: "❄️",
+      80: "🌦️",
+      95: "⛈️"
+    };
+
+    for (let i = 0; i < 7; i++) {
+      const div = document.createElement("div");
+      div.className = "weather-plank";
+
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+
+      const month = date.toLocaleString("default", { month: "long" });
+      const day = date.getDate();
+      const year = date.getFullYear();
+
+      const weekday = weekdays[(today + i) % 7];
+
+      const icon = weatherIcons[codes[i]] || "☁️";
+      const temp = Math.round(temps[i]);
+
+      div.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:stretch;gap:20px;">
+
+          <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
+
+            <div style="font-size:16px;font-weight:700;line-height:1.1;">
+              ${month} ${day}, ${year}
+            </div>
+
+            <div style="font-size:12px;opacity:0.7;line-height:1.1;margin-top:-2px;">
+              ${weekday}
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDE (true vertical center) -->
+          <div style="display:flex;align-items:center;justify-content:flex-end;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;">
+              <span style="position: relative; display: inline-block; font-weight: 600;">
+
+              <!-- Base layer -->
+              ${getTempGradientSpan(temp)}
+
+              </span>
+              <span>${icon}</span>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      stack.appendChild(div);
+    }
+
+  } catch (e) {
+    stack.innerHTML = `<div class="weather-plank">Forecast unavailable</div>`;
+  }
+}
+
 async function loadWeather() {
   const tempEl = document.getElementById("temp");
   const conditionEl = document.getElementById("condition");
@@ -370,7 +522,12 @@ async function loadWeather() {
     const lat = 32.9483;
     const lon = -96.7299;
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
+
+    const url = `https://api.open-meteo.com/v1/forecast
+      ?latitude=${lat}
+      &longitude=${lon}
+      &current_weather=true
+      &temperature_unit=fahrenheit`;
 
     const res = await fetch(url);
     const data = await res.json();
@@ -407,249 +564,5 @@ async function loadWeather() {
   }
 }
 
-loadWeather();
-
-function getWeekdays() {
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const today = new Date().getDay();
-
-  let result = [];
-  for (let i = 0; i < 7; i++) {
-    result.push(days[(today + i) % 7]);
-  }
-
-  return result;
-}
-
-// =====================
-// 🌡️ COLOR PALETTE
-// =====================
-const cold = "#437afa";     // blue
-const neutral = "#c8b08a";  // wood
-const hot = "#ff6b6b";      // red
-
-function lerp(a, b, t) {
-  return a + (b - a) * t;
-}
-
-// =====================
-// 🌡️ SINGLE TEMP MODEL
-// =====================
-const MIN_TEMP = 10;
-const MAX_TEMP = 110;
-
-function normalizeTemp(temp) {
-  let t = (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
-  return Math.max(0, Math.min(1, t));
-}
-
-// =====================
-// 🎨 TEMP COLOR
-// =====================
-function hexToRgb(hex) {
-  const clean = hex.replace("#", "");
-  return {
-    r: parseInt(clean.substring(0, 2), 16),
-    g: parseInt(clean.substring(2, 4), 16),
-    b: parseInt(clean.substring(4, 6), 16)
-  };
-}
-
-function rgbToHex(r, g, b) {
-  return (
-    "#" +
-    [r, g, b]
-      .map(x => Math.round(x).toString(16).padStart(2, "0"))
-      .join("")
-  );
-}
-
-function getTempColor(temp) {
-  const t = normalizeTemp(temp);
-
-  const coldRGB = hexToRgb(cold);
-  const neutralRGB = hexToRgb(neutral);
-  const hotRGB = hexToRgb(hot);
-
-  if (t < 0.5) {
-    // cold → neutral
-    const localT = t / 0.5;
-
-    return rgbToHex(
-      lerp(coldRGB.r, neutralRGB.r, localT),
-      lerp(coldRGB.g, neutralRGB.g, localT),
-      lerp(coldRGB.b, neutralRGB.b, localT)
-    );
-  } else {
-    // neutral → hot
-    const localT = (t - 0.5) / 0.5;
-
-    return rgbToHex(
-      lerp(neutralRGB.r, hotRGB.r, localT),
-      lerp(neutralRGB.g, hotRGB.g, localT),
-      lerp(neutralRGB.b, hotRGB.b, localT)
-    );
-  }
-}
-
-// =====================
-// 🌊 GRADIENT SPLIT CONTROL
-// =====================
-function getTempPush(temp) {
-  const t = normalizeTemp(temp);
-
-  // 30% (cold) → 70% (hot)
-  if(t < 0.5) {
-    // 60% gradient at coldest, 30% gradient at warmest.
-    return 30 + (0.5-t) * 30
-  } else {
-    // 30% gradient at coldest, 60% gradient at warmest.
-    return 30 + t * 30;
-  }
-}
-
-// =====================
-// 📅 FORECAST LOADER
-// =====================
-async function loadForecast() {
-  const forecastEl = document.getElementById("forecast");
-  if (!forecastEl) return;
-
-  const lat = 32.9483;
-  const lon = -96.7299;
-
-  const url =
-    `https://api.open-meteo.com/v1/forecast` +
-    `?latitude=${lat}` +
-    `&longitude=${lon}` +
-    `&daily=weathercode,temperature_2m_max` +
-    `&temperature_unit=fahrenheit` +
-    `&timezone=auto`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-  const daily = data.daily;
-  const weekdays = getWeekdays();
-
-  const weather = {
-    0:  { text: "Clear", icon: "☀️" },
-    1:  { text: "Mostly clear", icon: "🌤️" },
-    2:  { text: "Partly cloudy", icon: "⛅" },
-    3:  { text: "Overcast", icon: "☁️" },
-
-    45: { text: "Fog", icon: "🌫️" },
-    48: { text: "Freezing fog", icon: "🌫️" },
-
-    51: { text: "Light drizzle", icon: "🌦️" },
-    53: { text: "Drizzle", icon: "🌦️" },
-    55: { text: "Heavy drizzle", icon: "🌧️" },
-
-    61: { text: "Light rain", icon: "🌧️" },
-    63: { text: "Rain", icon: "🌧️" },
-    65: { text: "Heavy rain", icon: "🌧️" },
-
-    71: { text: "Light snow", icon: "🌨️" },
-    73: { text: "Snow", icon: "❄️" },
-    75: { text: "Heavy snow", icon: "❄️" },
-
-    80: { text: "Rain showers", icon: "🌦️" },
-    81: { text: "Strong showers", icon: "🌧️" },
-    82: { text: "Violent showers", icon: "⛈️" },
-
-    95: { text: "Thunderstorm", icon: "⛈️" },
-    96: { text: "Thunder + hail", icon: "⛈️" },
-    99: { text: "Heavy thunder + hail", icon: "⛈️" }
-  };
-
-  forecastEl.innerHTML = "";
-
-  for (let i = 0; i < 7; i++) {
-    const temp = 30;
-    // const temp = Math.round(daily.temperature_2m_max[i]);
-    const code = daily.weathercode[i];
-
-    const div = document.createElement("div");
-    div.className = "weather-plank";
-
-    const baseDate = new Date();
-    const currentDate = new Date(baseDate);
-    currentDate.setDate(baseDate.getDate() + i);
-
-    const fullDate = currentDate.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    });
-
-    div.innerHTML = `
-      <div style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-      ">
-
-        <!-- LEFT SIDE -->
-        <div style="
-          display: flex;
-          flex-direction: column;
-          line-height: 1.1;
-        ">
-
-          <div style="
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          ">
-            ${fullDate}
-          </div>
-
-          <div style="
-            font-size: 10px;
-            opacity: 0.75;
-            margin-top: 2px;
-          ">
-            ${weekdays[i]}
-          </div>
-
-        </div>
-
-        <!-- RIGHT SIDE -->
-        <div style="
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 16px;
-          font-weight: 600;
-        ">
-
-          <span class="temp-color">
-            ${temp}°F
-          </span>
-
-          <span style="font-size: 22px;">
-            ${weather[code]?.icon || "☁️"}
-          </span>
-
-        </div>
-
-      </div>
-    `;
-
-    const tempEl = div.querySelector(".temp-color");
-
-    if (tempEl) {
-      const tempColor = getTempColor(temp);
-      const split = getTempPush(temp);
-
-      tempEl.style.setProperty("--temp-color", tempColor);
-      tempEl.style.setProperty("--split", `${split}%`);
-    }
-
-    forecastEl.appendChild(div);
-  }
-}
-
 loadForecast();
-setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
-
+setInterval(loadWeather, 10 * 60 * 1000);
