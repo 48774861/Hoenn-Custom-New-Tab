@@ -314,7 +314,7 @@
       font-size: 12px;
       opacity: 0.7;
     } */
-     #forecast {
+     /* #forecast {
       position: fixed;
       top: 10px;
       left: 10px;
@@ -337,6 +337,82 @@
       text-shadow: 0 1px 0 rgba(0,0,0,0.6);
 
       user-select: none;
+    } */
+
+    .weather-plank {
+      width: 220px;
+      height: 60px;
+
+      background: url("icons/wood-texture.png");
+      background-size: cover;
+
+      border: 2px solid #2a2b1f;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: "PixelFont";
+      color: #edd8ac;
+
+      text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+
+      margin-bottom: 8px;
+
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: dropIn 0.4s ease forwards;
+    }
+
+    .weather-plank:nth-child(1) { animation-delay: 0.05s; }
+    .weather-plank:nth-child(2) { animation-delay: 0.10s; }
+    .weather-plank:nth-child(3) { animation-delay: 0.15s; }
+    .weather-plank:nth-child(4) { animation-delay: 0.20s; }
+    .weather-plank:nth-child(5) { animation-delay: 0.25s; }
+    .weather-plank:nth-child(6) { animation-delay: 0.30s; }
+    .weather-plank:nth-child(7) { animation-delay: 0.35s; }
+
+    @keyframes dropIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .temp-color {
+      font-weight: 600;
+
+      /* fallback base color */
+      color: #c8b08a;
+
+      /* layered gradient system */
+      background:
+        /* 🌡️ temperature influence (origin bottom-right) */
+        linear-gradient(
+          340deg,
+
+          var(--temp-color, #ff6b6b) 0%,
+
+          var(--temp-color, #ff6b6b) calc(var(--split, 50%) - 10%),
+
+          rgba(200, 176, 138, 0) var(--split, 50%)
+        ),
+
+        /* 🪵 wood base */
+        linear-gradient(
+          160deg,
+          #c8b08a 0%,
+          #c8a976 100%
+        );
+
+      /* required for text gradient rendering */
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+
+      /* subtle depth so it doesn't feel flat */
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
     }
   </style>
 </head>
@@ -372,6 +448,7 @@
   </div>
 
   <!-- SCRIPT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script src="newtab.js"></script>
 
 </body>

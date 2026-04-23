@@ -360,124 +360,296 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// async function loadWeather() {
-//   const tempEl = document.getElementById("temp");
-//   const conditionEl = document.getElementById("condition");
-//   const extraEl = document.getElementById("extra");
-
-//   try {
-//     // 📍 Richardson, TX approx coords
-//     const lat = 32.9483;
-//     const lon = -96.7299;
-
-//     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
-
-//     const res = await fetch(url);
-//     const data = await res.json();
-
-//     const weather = data.current_weather;
-//     const temp = weather.temperature;
-//     const code = weather.weathercode;
-
-//     // 🌤️ simple condition mapping
-//     const conditions = {
-//       0: "Clear Sky",
-//       1: "Mostly Clear",
-//       2: "Partly Cloudy",
-//       3: "Cloudy",
-//       45: "Fog",
-//       48: "Fog",
-//       51: "Drizzle",
-//       61: "Rain",
-//       71: "Snow",
-//       80: "Rain Showers",
-//       95: "Thunderstorm"
-//     };
-
-//     tempEl.textContent = `${Math.round(temp)}°F`;
-//     conditionEl.textContent = conditions[code] || "Unknown";
-
-//     // fallback humidity (optional safe default)
-//     extraEl.textContent = "Local Weather";
-
-//   } catch (e) {
-//     tempEl.textContent = "--°F";
-//     conditionEl.textContent = "Weather Error";
-//     extraEl.textContent = "";
-//   }
-// }
-
-// loadWeather();
-// setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
-
-async function loadForecast() {
-  const forecastEl = document.getElementById("forecast");
-  if (!forecastEl) return;
+async function loadWeather() {
+  const tempEl = document.getElementById("temp");
+  const conditionEl = document.getElementById("condition");
+  const extraEl = document.getElementById("extra");
 
   try {
+    // 📍 Richardson, TX approx coords
     const lat = 32.9483;
     const lon = -96.7299;
 
-    const url =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${lat}` +
-      `&longitude=${lon}` +
-      `&daily=weathercode,temperature_2m_max` +
-      `&temperature_unit=fahrenheit` +
-      `&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`;
 
     const res = await fetch(url);
     const data = await res.json();
 
-    const daily = data.daily;
+    const weather = data.current_weather;
+    const temp = weather.temperature;
+    const code = weather.weathercode;
 
+    // 🌤️ simple condition mapping
     const conditions = {
-      0: "sunny",
-      1: "sunny",
-      2: "cloudy",
-      3: "cloudy",
-
-      45: "cloudy", // fog merged into cloudy
-      48: "cloudy", // fog merged into cloudy
-
-      51: "rain",
-      61: "rain",
-      80: "rain",
-      95: "rain",   // storm merged into rain
-
-      71: "snow"
+      0: "Clear Sky",
+      1: "Mostly Clear",
+      2: "Partly Cloudy",
+      3: "Cloudy",
+      45: "Fog",
+      48: "Fog",
+      51: "Drizzle",
+      61: "Rain",
+      71: "Snow",
+      80: "Rain Showers",
+      95: "Thunderstorm"
     };
 
-    forecastEl.innerHTML = "";
+    tempEl.textContent = `${Math.round(temp)}°F`;
+    conditionEl.textContent = conditions[code] || "Unknown";
 
-    for (let i = 0; i < 7; i++) {
-      const temp = Math.round(daily.temperature_2m_max[i]);
-      const code = daily.weathercode[i];
-      const icon = conditions[code] || "unknown";
-
-      const dayEl = document.createElement("div");
-      dayEl.style.display = "flex";
-      dayEl.style.alignItems = "center";
-      dayEl.style.gap = "6px";
-
-      const img = document.createElement("img");
-      img.src = `icons/${icon}.png`;
-      img.style.width = "18px";
-      img.style.height = "18px";
-
-      const label = document.createElement("div");
-      label.textContent = `${temp}°F`;
-
-      dayEl.appendChild(img);
-      dayEl.appendChild(label);
-
-      forecastEl.appendChild(dayEl);
-    }
+    // fallback humidity (optional safe default)
+    extraEl.textContent = "Local Weather";
 
   } catch (e) {
-    console.error("Forecast error:", e);
+    tempEl.textContent = "--°F";
+    conditionEl.textContent = "Weather Error";
+    extraEl.textContent = "";
+  }
+}
+
+loadWeather();
+
+function getWeekdays() {
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const today = new Date().getDay();
+
+  let result = [];
+  for (let i = 0; i < 7; i++) {
+    result.push(days[(today + i) % 7]);
+  }
+
+  return result;
+}
+
+// =====================
+// 🌡️ COLOR PALETTE
+// =====================
+const cold = "#437afa";     // blue
+const neutral = "#c8b08a";  // wood
+const hot = "#ff6b6b";      // red
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+// =====================
+// 🌡️ SINGLE TEMP MODEL
+// =====================
+const MIN_TEMP = 10;
+const MAX_TEMP = 110;
+
+function normalizeTemp(temp) {
+  let t = (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
+  return Math.max(0, Math.min(1, t));
+}
+
+// =====================
+// 🎨 TEMP COLOR
+// =====================
+function hexToRgb(hex) {
+  const clean = hex.replace("#", "");
+  return {
+    r: parseInt(clean.substring(0, 2), 16),
+    g: parseInt(clean.substring(2, 4), 16),
+    b: parseInt(clean.substring(4, 6), 16)
+  };
+}
+
+function rgbToHex(r, g, b) {
+  return (
+    "#" +
+    [r, g, b]
+      .map(x => Math.round(x).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+
+function getTempColor(temp) {
+  const t = normalizeTemp(temp);
+
+  const coldRGB = hexToRgb(cold);
+  const neutralRGB = hexToRgb(neutral);
+  const hotRGB = hexToRgb(hot);
+
+  if (t < 0.5) {
+    // cold → neutral
+    const localT = t / 0.5;
+
+    return rgbToHex(
+      lerp(coldRGB.r, neutralRGB.r, localT),
+      lerp(coldRGB.g, neutralRGB.g, localT),
+      lerp(coldRGB.b, neutralRGB.b, localT)
+    );
+  } else {
+    // neutral → hot
+    const localT = (t - 0.5) / 0.5;
+
+    return rgbToHex(
+      lerp(neutralRGB.r, hotRGB.r, localT),
+      lerp(neutralRGB.g, hotRGB.g, localT),
+      lerp(neutralRGB.b, hotRGB.b, localT)
+    );
+  }
+}
+
+// =====================
+// 🌊 GRADIENT SPLIT CONTROL
+// =====================
+function getTempPush(temp) {
+  const t = normalizeTemp(temp);
+
+  // 30% (cold) → 70% (hot)
+  if(t < 0.5) {
+    // 60% gradient at coldest, 30% gradient at warmest.
+    return 30 + (0.5-t) * 30
+  } else {
+    // 30% gradient at coldest, 60% gradient at warmest.
+    return 30 + t * 30;
+  }
+}
+
+// =====================
+// 📅 FORECAST LOADER
+// =====================
+async function loadForecast() {
+  const forecastEl = document.getElementById("forecast");
+  if (!forecastEl) return;
+
+  const lat = 32.9483;
+  const lon = -96.7299;
+
+  const url =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${lat}` +
+    `&longitude=${lon}` +
+    `&daily=weathercode,temperature_2m_max` +
+    `&temperature_unit=fahrenheit` +
+    `&timezone=auto`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+  const daily = data.daily;
+  const weekdays = getWeekdays();
+
+  const weather = {
+    0:  { text: "Clear", icon: "☀️" },
+    1:  { text: "Mostly clear", icon: "🌤️" },
+    2:  { text: "Partly cloudy", icon: "⛅" },
+    3:  { text: "Overcast", icon: "☁️" },
+
+    45: { text: "Fog", icon: "🌫️" },
+    48: { text: "Freezing fog", icon: "🌫️" },
+
+    51: { text: "Light drizzle", icon: "🌦️" },
+    53: { text: "Drizzle", icon: "🌦️" },
+    55: { text: "Heavy drizzle", icon: "🌧️" },
+
+    61: { text: "Light rain", icon: "🌧️" },
+    63: { text: "Rain", icon: "🌧️" },
+    65: { text: "Heavy rain", icon: "🌧️" },
+
+    71: { text: "Light snow", icon: "🌨️" },
+    73: { text: "Snow", icon: "❄️" },
+    75: { text: "Heavy snow", icon: "❄️" },
+
+    80: { text: "Rain showers", icon: "🌦️" },
+    81: { text: "Strong showers", icon: "🌧️" },
+    82: { text: "Violent showers", icon: "⛈️" },
+
+    95: { text: "Thunderstorm", icon: "⛈️" },
+    96: { text: "Thunder + hail", icon: "⛈️" },
+    99: { text: "Heavy thunder + hail", icon: "⛈️" }
+  };
+
+  forecastEl.innerHTML = "";
+
+  for (let i = 0; i < 7; i++) {
+    const temp = 30;
+    // const temp = Math.round(daily.temperature_2m_max[i]);
+    const code = daily.weathercode[i];
+
+    const div = document.createElement("div");
+    div.className = "weather-plank";
+
+    const baseDate = new Date();
+    const currentDate = new Date(baseDate);
+    currentDate.setDate(baseDate.getDate() + i);
+
+    const fullDate = currentDate.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+
+    div.innerHTML = `
+      <div style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      ">
+
+        <!-- LEFT SIDE -->
+        <div style="
+          display: flex;
+          flex-direction: column;
+          line-height: 1.1;
+        ">
+
+          <div style="
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+          ">
+            ${fullDate}
+          </div>
+
+          <div style="
+            font-size: 10px;
+            opacity: 0.75;
+            margin-top: 2px;
+          ">
+            ${weekdays[i]}
+          </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 16px;
+          font-weight: 600;
+        ">
+
+          <span class="temp-color">
+            ${temp}°F
+          </span>
+
+          <span style="font-size: 22px;">
+            ${weather[code]?.icon || "☁️"}
+          </span>
+
+        </div>
+
+      </div>
+    `;
+
+    const tempEl = div.querySelector(".temp-color");
+
+    if (tempEl) {
+      const tempColor = getTempColor(temp);
+      const split = getTempPush(temp);
+
+      tempEl.style.setProperty("--temp-color", tempColor);
+      tempEl.style.setProperty("--split", `${split}%`);
+    }
+
+    forecastEl.appendChild(div);
   }
 }
 
 loadForecast();
-setInterval(loadForecast, 60 * 60 * 1000); // update hourly
+setInterval(loadWeather, 10 * 60 * 1000); // update every 10 min
+
