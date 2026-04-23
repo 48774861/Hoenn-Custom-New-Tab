@@ -489,6 +489,8 @@ async function loadForecast() {
     `;
 
     stack.appendChild(div);
+    div.style.setProperty("--delay", `${i * 80}ms`);
+    div.style.setProperty("--winddelay", `${i * 80}ms`);
   }
 
   // -----------------------------
