@@ -400,7 +400,9 @@ async function loadForecast() {
 
   forecastEl.innerHTML = "";
 
-  // Header
+  // -----------------------------
+  // HEADER
+  // -----------------------------
   const header = document.createElement("div");
   header.className = "weather-plank weather-header";
   header.innerHTML = `<div style="font-weight:800;font-size: clamp(14px, 2.2vw, 28px);">Weather Forecast</div>`;
@@ -415,6 +417,83 @@ async function loadForecast() {
   sway.appendChild(stack);
   forecastEl.appendChild(sway);
 
+  // -----------------------------
+  // CACHE LOAD
+  // -----------------------------
+  const cached = localStorage.getItem("weather_cache");
+  const cachedData = cached ? JSON.parse(cached).data : null;
+
+  const weatherIcons = {
+    0: "☀️",
+    1: "🌤️",
+    2: "⛅",
+    3: "☁️",
+    45: "🌫️",
+    48: "🌫️",
+    51: "🌦️",
+    61: "🌧️",
+    71: "❄️",
+    80: "🌦️",
+    95: "⛈️"
+  };
+
+  // -----------------------------
+  // PHASE 1: RENDER BASE ROWS (DATES ALWAYS SHOWN)
+  // -----------------------------
+  for (let i = 0; i < 7; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+
+    const month = date.toLocaleString("default", { month: "long" });
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const weekday = weekdays[(today + i) % 7];
+
+    const hasCached = cachedData?.daily?.temperature_2m_max?.[i] != null;
+
+    const temp = hasCached ? Math.round(cachedData.daily.temperature_2m_max[i]) : null;
+    const icon = hasCached ? (weatherIcons[cachedData.daily.weathercode[i]] || "☁️") : "⏳";
+
+    const div = document.createElement("div");
+    div.className = "weather-plank";
+
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;">
+
+        <!-- LEFT -->
+        <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
+
+          <div style="font-size: clamp(8px, 1.4vw, 16px);font-weight:700;line-height:1.1;">
+            ${month} ${day}, ${year}
+          </div>
+
+          <div style="font-size: clamp(6px, 1.2vw, 12px);opacity:0.7;line-height:1.1;">
+            ${weekday}
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div style="display:flex;align-items:center;gap:8px;font-size: clamp(9px, 1.6vw, 18px);font-weight:600;">
+          <div class="temp-group">
+            ${
+              temp != null
+                ? getTempGradientSpan(temp)
+                : `<span class="temp-text">--°F</span>`
+            }
+            <span class="temp-icon">${icon}</span>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    stack.appendChild(div);
+  }
+
+  // -----------------------------
+  // FETCH FRESH DATA
+  // -----------------------------
   try {
     const lat = 32.9483;
     const lon = -96.7299;
@@ -424,72 +503,34 @@ async function loadForecast() {
     const res = await fetch(url);
     const data = await res.json();
 
+    // save cache
+    localStorage.setItem("weather_cache", JSON.stringify({
+      time: Date.now(),
+      data
+    }));
+
     const temps = data.daily.temperature_2m_max;
     const codes = data.daily.weathercode;
 
-    const weatherIcons = {
-      0: "☀️",
-      1: "🌤️",
-      2: "⛅",
-      3: "☁️",
-      45: "🌫️",
-      48: "🌫️",
-      51: "🌦️",
-      61: "🌧️",
-      71: "❄️",
-      80: "🌦️",
-      95: "⛈️"
-    };
+    // -----------------------------
+    // PHASE 2: UPDATE IN PLACE
+    // -----------------------------
+    const rows = stack.querySelectorAll(".weather-plank");
 
-    for (let i = 0; i < 7; i++) {
-      const div = document.createElement("div");
-      div.className = "weather-plank";
-
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-
-      const month = date.toLocaleString("default", { month: "long" });
-      const day = date.getDate();
-      const year = date.getFullYear();
-
-      const weekday = weekdays[(today + i) % 7];
-
-      const icon = weatherIcons[codes[i]] || "☁️";
+    for (let i = 0; i < rows.length; i++) {
       const temp = Math.round(temps[i]);
+      const icon = weatherIcons[codes[i]] || "☁️";
 
-      div.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:stretch;gap:20px;">
+      const group = rows[i].querySelector(".temp-group");
 
-          <div style="display:flex;flex-direction:column;gap:2px;justify-content:center;">
-
-            <div style="font-size: clamp(8px, 1.4vw, 16px);font-weight:700;line-height:1.1;">
-              ${month} ${day}, ${year}
-            </div>
-
-            <div style="font-size: clamp(6px, 1.2vw, 12px);;opacity:0.7;line-height:1.1;margin-top:-2px;">
-              ${weekday}
-            </div>
-
-          </div>
-
-          <!-- RIGHT SIDE (true vertical center) -->
-          <div style="display:flex;align-items:center;justify-content:flex-end;">
-            <div style="display:flex;align-items:center;gap:8px;font-size: clamp(9px, 1.6vw, 18px);font-weight:600;">
-              <div class="temp-group">
-                ${getTempGradientSpan(temp)}
-                <span class="temp-icon">${icon}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
+      group.innerHTML = `
+        ${getTempGradientSpan(temp)}
+        <span class="temp-icon">${icon}</span>
       `;
-
-      stack.appendChild(div);
     }
 
   } catch (e) {
-    stack.innerHTML = `<div class="weather-plank">Forecast unavailable</div>`;
+    console.warn("Forecast unavailable", e);
   }
 }
 
