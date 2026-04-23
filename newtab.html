@@ -474,6 +474,40 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-2px); }
     }
+    #quick-notes {
+      position: fixed;
+      top: 150px;     /* adjust depending on clock height */
+      right: 20px;
+
+      width: clamp(40px, 10vw, 160px);
+      height: clamp(40px, 10vw, 160px);
+
+      z-index: 9999;
+
+      resize: none;
+      outline: none;
+
+      font-family: "PixelFont", monospace;
+      font-size: 12px;
+      color: #edd8ac;
+
+      background: url("icons/wood-texture.png");
+      background-size: cover;
+
+      border: 2px solid #2a2b1f;
+      border-radius: 6px;
+
+      padding: 6px;
+
+      text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+    }
+    #quick-notes {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    #quick-notes:hover {
+      transform: translateY(-2px);
+      transition: 0.2s ease;
+    }
 
   </style>
 </head>
@@ -501,5 +535,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script src="newtab.js"></script>
 
+  <textarea id="quick-notes" placeholder="notes..."></textarea>
 </body>
 </html>

@@ -538,3 +538,14 @@ async function loadForecast() {
 
 loadForecast();
 setInterval(loadForecast, 10 * 60 * 1000);
+
+window.addEventListener("DOMContentLoaded", () => {
+  const notes = document.getElementById("quick-notes");
+
+  const saved = localStorage.getItem("quick_notes");
+  if (saved !== null) notes.value = saved;
+
+  notes.addEventListener("input", () => {
+    localStorage.setItem("quick_notes", notes.value);
+  });
+});
