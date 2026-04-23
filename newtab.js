@@ -475,13 +475,10 @@ async function loadForecast() {
           <!-- RIGHT SIDE (true vertical center) -->
           <div style="display:flex;align-items:center;justify-content:flex-end;">
             <div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;">
-              <span style="position: relative; display: inline-block; font-weight: 600;">
-
-              <!-- Base layer -->
-              ${getTempGradientSpan(temp)}
-
-              </span>
-              <span>${icon}</span>
+              <div class="temp-group">
+                ${getTempGradientSpan(temp)}
+                <span class="temp-icon">${icon}</span>
+              </div>
             </div>
           </div>
 
