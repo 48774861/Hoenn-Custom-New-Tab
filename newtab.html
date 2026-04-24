@@ -474,15 +474,25 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-2px); }
     }
-    #quick-notes {
+    
+    #notes-wrapper {
       position: fixed;
-      top: 150px;     /* adjust depending on clock height */
+      top: 150px;
       right: 20px;
 
-      width: clamp(40px, 10vw, 160px);
-      height: clamp(40px, 10vw, 160px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      gap: 6px;
 
       z-index: 9999;
+    }
+
+    /* NOTES BOX */
+    #quick-notes {
+      width: 160px;
+      height: 120px;
 
       resize: none;
       outline: none;
@@ -491,18 +501,43 @@
       font-size: 12px;
       color: #edd8ac;
 
-      background: url("icons/wood-texture.png");
-      background-size: cover;
+      background-position: center;
+      background: url("icons/default_notes.png") center / cover no-repeat;
 
       border: 2px solid #2a2b1f;
       border-radius: 6px;
 
       padding: 6px;
 
+      text-align: center;
+
       text-shadow: 0 1px 0 rgba(0,0,0,0.5);
     }
-    #quick-notes {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+    /* BUTTON (below + right aligned) */
+    #notes-bg-btn {
+      width: 75px;
+      height: 10px;
+
+      font-size: 6px;
+
+      background: rgba(0,0,0,0);
+      border: 1px solid rgba(0,0,0,0);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      cursor: pointer;
+
+      color: #edd8ac;
+
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    #notes-bg-btn:hover {
+      transform: scale(1.1);
+      background: rgba(0,0,0,0.4);
     }
     #quick-notes:hover {
       transform: translateY(-2px);
@@ -535,6 +570,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script src="newtab.js"></script>
 
-  <textarea id="quick-notes" placeholder="notes..."></textarea>
+  <div id="notes-wrapper">
+    <textarea id="quick-notes" placeholder="Quick notes..."></textarea>
+
+    <button id="notes-bg-btn" title="Change Background">Change Background</button>
+
+    <input type="file" id="notes-bg-upload" accept="image/*" hidden />
+  </div>
 </body>
 </html>

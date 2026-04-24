@@ -20,5 +20,5 @@
     }
   ],
 
-  "permissions": ["bookmarks", "downloads", "tabs"]
+  "permissions": ["bookmarks", "downloads", "tabs", "storage"]
 }

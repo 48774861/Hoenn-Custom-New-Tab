@@ -539,13 +539,50 @@ async function loadForecast() {
 loadForecast();
 setInterval(loadForecast, 10 * 60 * 1000);
 
+
+
 window.addEventListener("DOMContentLoaded", () => {
   const notes = document.getElementById("quick-notes");
+  const btn = document.getElementById("notes-bg-btn");
 
-  const saved = localStorage.getItem("quick_notes");
-  if (saved !== null) notes.value = saved;
+  if (!notes || !btn) {
+    console.error("Notes elements missing");
+    return;
+  }
+
+  // =========================
+  // TEXT PERSISTENCE
+  // =========================
+  const savedText = localStorage.getItem("quick_notes");
+  if (savedText && savedText !== null && value.startsWith("blob:")) {
+    notes.value = savedText;
+  }
 
   notes.addEventListener("input", () => {
     localStorage.setItem("quick_notes", notes.value);
+  });
+
+  // =========================
+  // BACKGROUND LOAD
+  // =========================
+  const savedBg = localStorage.getItem("notes_bg");
+
+  if (savedBg && savedBg.trim() !== "") {
+    notes.style.background = `url("${savedBg}") center / cover no-repeat`;
+  }
+
+  // =========================
+  // SET BACKGROUND (URL ONLY)
+  // =========================
+  btn.addEventListener("click", () => {
+    const url = prompt("Enter image URL:");
+
+    if (!url || url.trim() === "") return;
+
+    const clean = url.trim();
+
+    localStorage.setItem("notes_bg", clean);
+
+    notes.style.background = `url("${clean}") center / cover no-repeat`;
   });
 });
