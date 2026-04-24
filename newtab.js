@@ -551,10 +551,11 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================
-  // TEXT PERSISTENCE
+  // 📝 TEXT PERSISTENCE (FIXED)
   // =========================
   const savedText = localStorage.getItem("quick_notes");
-  if (savedText && savedText !== null && value.startsWith("blob:")) {
+
+  if (savedText !== null) {
     notes.value = savedText;
   }
 
@@ -563,16 +564,16 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================
-  // BACKGROUND LOAD
+  // 🖼️ BACKGROUND LOAD
   // =========================
   const savedBg = localStorage.getItem("notes_bg");
 
-  if (savedBg && savedBg.trim() !== "") {
+  if (savedBg && savedBg.trim() !== "" && value.startsWith("blob:")) {
     notes.style.background = `url("${savedBg}") center / cover no-repeat`;
   }
 
   // =========================
-  // SET BACKGROUND (URL ONLY)
+  // 🎛️ SET BACKGROUND (URL ONLY)
   // =========================
   btn.addEventListener("click", () => {
     const url = prompt("Enter image URL:");
