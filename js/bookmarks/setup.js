@@ -10,7 +10,7 @@ import { navigate } from "../shared_functions/url_navigation.js";
 export function setupBookmarks() {
 
   let root = [];
-  const dock = document.getElementById("app-dock");
+  const dock = document.getElementById("bookmarks-bar");
 
   // Gets the bookmarks from the Chrome browser and renders it.
   chrome.bookmarks.getTree((tree) => {

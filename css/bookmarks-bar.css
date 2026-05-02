@@ -1,4 +1,4 @@
-#app-dock {
+#bookmarks-bar {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -10,7 +10,7 @@
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-#app-dock img {
+#bookmarks-bar img {
   width: 26px;
   height: 26px;
   cursor: pointer;
@@ -19,23 +19,7 @@
   opacity: 0.85;
 }
 
-#app-dock img:hover {
-  filter: none;
-  opacity: 1;
-  transform: scale(1.15);
-}
-
-#settings-btn {
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  display: block;
-  filter: brightness(0.55) saturate(0.4) sepia(0.6) hue-rotate(90deg);
-  opacity: 0.85;
-  transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
-}
-
-#settings-btn:hover {
+#bookmarks-bar img:hover {
   filter: none;
   opacity: 1;
   transform: scale(1.15);
