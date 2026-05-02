@@ -1,8 +1,5 @@
 import { createBookmark } from "./bookmarks.js"
 
-let root = [];
-let currentFolder = null;
-
 export function createFolder(node) {
   const img = document.createElement("img");
   img.src = chrome.runtime.getURL("icons/folder.png");
@@ -17,17 +14,17 @@ export function createBackButton() {
   return img;
 }
 
-// ---------------- ROOT ----------------
+// Render the original bookmarks bar
 export function renderRoot(root, dock) {
-  dock.innerHTML = "";
-  currentFolder = null;
+  dock.innerHTML = ""; // Reset the bookmarks currently rendered in the dock.
 
+  // For each bookmark in the original bookmarks bar
   root.forEach(node => {
-    if (node.url) {
+    if (node.url) { // Navigate to the bookmark's URL if it's an actual bookmark.
       const el = createBookmark(node);
       el.addEventListener("click", () => navigate(node.url));
       dock.appendChild(el);
-    } else if (node.children) {
+    } else if (node.children) { // Make it a folder if has bookmarks inside of it.
       const el = createFolder(node);
       el.addEventListener("click", () => renderFolder(node, root, dock));
       dock.appendChild(el);
@@ -35,22 +32,22 @@ export function renderRoot(root, dock) {
   });
 }
 
-// ---------------- FOLDER ----------------
+// Render the bookmarks within a folder
 export function renderFolder(folder, root, dock) {
-  dock.innerHTML = "";
-  currentFolder = folder;
+  dock.innerHTML = ""; // Reset the bookmarks currently rendered in the dock.
 
-  // back button
+  // Back Button renders the previous bookmarks bar again.
   const back = createBackButton();
   back.addEventListener("click", () => { renderRoot(root, dock); });
   dock.appendChild(back);
 
+  // For each bookmark in the current folder
   folder.children.forEach(node => {
-    if (node.url) {
+    if (node.url) { // Navigate to the bookmark's URL if it's an actual bookmark.
       const el = createBookmark(node);
       el.addEventListener("click", () => navigate(node.url));
       dock.appendChild(el);
-    } else if (node.children) {
+    } else if (node.children) { // Make it a folder if has bookmarks inside of it.
       const el = createFolder(node);
       el.addEventListener("click", () => renderFolder(node));
       dock.appendChild(el);

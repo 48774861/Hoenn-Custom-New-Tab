@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------------- STATE ----------------
   let root = [];
-  let currentFolder = null;
 
   // ---------------- BOOKMARK INIT ----------------
   chrome.bookmarks.getTree((tree) => {
