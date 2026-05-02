@@ -1,35 +1,16 @@
-import { searchBookmarks } from "./bookmarks/search_bookmarks.js";
-import { navigate } from "./shared_functions/url_navigation.js";
 import { setupBookmarks } from "./bookmarks/setup.js";
+import { setupSearchBar } from "./search_bar/setup.js";
 
-import { startClock } from "./clock.js";
+import { setupClock } from "./clock.js";
 import { startWeather } from "./weather.js";
 import { initNotes } from "./notes.js";
-import { initWiggle } from "./effects.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const dock = document.getElementById("app-dock");
+  
   const searchInput = document.getElementById("search");
 
-  setupBookmarks(dock);
-
-  // ---------------- SEARCH ----------------
-  searchInput?.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-
-    const query = searchInput.value.trim();
-    if (!query) return;
-
-    const results = searchBookmarks(query);
-
-    if (results.length) {
-      navigate(results[0].url);
-    } else {
-      window.location.href =
-        "https://www.google.com/search?q=" +
-        encodeURIComponent(query);
-    }
-  });
+  setupBookmarks();
+  setupSearchBar();
 
   const settingsBtn = document.getElementById("settings-btn");
 
@@ -38,8 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ---------------- INIT OTHER FEATURES ----------------
-  startClock();
+  setupClock();
   startWeather();
   initNotes();
-  initWiggle();
 });

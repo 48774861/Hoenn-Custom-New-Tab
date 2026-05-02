@@ -1,4 +1,4 @@
-export function startClock() {
+export function setupClock() {
 
     // ---------------- CLOCK ----------------
     function updateClock() {

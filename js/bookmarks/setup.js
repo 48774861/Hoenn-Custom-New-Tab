@@ -7,9 +7,10 @@ import { createBookmark, createFolder, createBackButton } from "./get_icons.js"
 import { buildBookmarkIndex } from "./search_bookmarks.js";
 import { navigate } from "../shared_functions/url_navigation.js";
 
-export function setupBookmarks(dock) {
+export function setupBookmarks() {
 
   let root = [];
+  const dock = document.getElementById("app-dock");
 
   // Gets the bookmarks from the Chrome browser and renders it.
   chrome.bookmarks.getTree((tree) => {
