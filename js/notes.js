@@ -1,5 +1,5 @@
 
-export function initNotes() {
+export function setupNotesBox() {
     const notes = document.getElementById("quick-notes");
     const btn = document.getElementById("notes-bg-btn");
 
