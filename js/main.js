@@ -1,11 +1,6 @@
-import { createBookmark, buildBookmarkIndex, searchBookmarks } from "./bookmarks.js";
+import { searchBookmarks } from "./bookmarks/search_bookmarks.js";
 import { navigate } from "./shared_functions/url_navigation.js";
-import {
-  createFolder,
-  createBackButton,
-  renderRoot,
-  renderFolder
-} from "./ui.js";
+import { setupBookmarks } from "./bookmarks/setup.js";
 
 import { startClock } from "./clock.js";
 import { startWeather } from "./weather.js";
@@ -16,18 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const dock = document.getElementById("app-dock");
   const searchInput = document.getElementById("search");
 
-  // ---------------- STATE ----------------
-  let root = [];
-
-  // ---------------- BOOKMARK INIT ----------------
-  chrome.bookmarks.getTree((tree) => {
-      const bar = tree?.[0]?.children?.find(n => n.id === "1");
-      root = bar?.children || [];
-
-      buildBookmarkIndex(root);
-
-      renderRoot(root, dock);
-  });
+  setupBookmarks(dock);
 
   // ---------------- SEARCH ----------------
   searchInput?.addEventListener("keydown", (e) => {

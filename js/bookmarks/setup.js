@@ -1,17 +1,24 @@
-import { createBookmark } from "./bookmarks.js"
+/*
+  Gets the bookmarks from the Chrome browser's bookmarks bar.
+  Renders all the icons for the bookmarks bar, including folder navigation within the bookmarks bar.
+*/
 
-export function createFolder(node) {
-  const img = document.createElement("img");
-  img.src = chrome.runtime.getURL("icons/folder.png");
-  img.title = node.title;
-  return img;
-}
+import { createBookmark, createFolder, createBackButton } from "./get_icons.js"
+import { buildBookmarkIndex } from "./search_bookmarks.js";
+import { navigate } from "../shared_functions/url_navigation.js";
 
-export function createBackButton() {
-  const img = document.createElement("img");
-  img.src = chrome.runtime.getURL("icons/backbutton.png");
-  img.title = "Back";
-  return img;
+export function setupBookmarks(dock) {
+
+  let root = [];
+
+  // Gets the bookmarks from the Chrome browser and renders it.
+  chrome.bookmarks.getTree((tree) => {
+      const bar = tree?.[0]?.children?.find(n => n.id === "1");
+      root = bar?.children || [];
+
+      buildBookmarkIndex(root);
+      renderRoot(root, dock);
+  });
 }
 
 // Render the original bookmarks bar
