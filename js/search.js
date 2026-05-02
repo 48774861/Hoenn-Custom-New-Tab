@@ -1,27 +1,5 @@
-const aliasMap = {
-  gm: "gmail",
-  mail: "gmail",
-  yt: "youtube",
-  gh: "github",
-  docs: "google docs",
-  drive: "google drive",
-  cal: "google calendar",
-  work: "work",
-  canvas: "smu.instructure",
-  can: "smu.instructure",
-  canv: "smu.instructure",
-  canva: "smu.instructure",
-  onedrive: "smu365-my.sharepoint",
-  one: "smu365-my.sharepoint"
-};
+import { navigate } from "./shared_functions/url_navigation.js";
 
-// ---------------- NORMALIZE ----------------
-export function normalizeQuery(query) {
-  const words = query.toLowerCase().trim().split(" ");
-  return words.map(w => aliasMap[w] || w).join(" ");
-}
-
-// ---------------- SEARCH HANDLER ----------------
 export function handleSearch(input) {
   const query = input.trim();
   if (!query) return;

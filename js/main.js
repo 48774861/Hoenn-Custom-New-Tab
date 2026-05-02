@@ -1,6 +1,6 @@
-import { buildBookmarkIndex, searchBookmarks, navigate } from "./bookmarks.js";
+import { createBookmark, buildBookmarkIndex, searchBookmarks } from "./bookmarks.js";
+import { navigate } from "./shared_functions/url_navigation.js";
 import {
-  createBookmark,
   createFolder,
   createBackButton,
   renderRoot,
@@ -16,34 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const dock = document.getElementById("app-dock");
   const searchInput = document.getElementById("search");
 
+  // ---------------- STATE ----------------
   let root = [];
   let currentFolder = null;
 
-  // ---------------- HELPERS (DEFINED ONCE) ----------------
-  const helpers = {
-    createBookmark: (node) => createBookmark(node, navigate),
-
-    createFolder: (node) =>
-        createFolder(node, (folder) => {
-            currentFolder = folder;
-            renderFolder(folder, dock, helpers);
-        }),
-
-    createBackButton: () =>
-        createBackButton(() => {
-            currentFolder = null;
-            renderRoot(root, dock, helpers);
-        })
-    };
-
   // ---------------- BOOKMARK INIT ----------------
   chrome.bookmarks.getTree((tree) => {
-    const bar = tree?.[0]?.children?.find(n => n.id === "1");
-    root = bar?.children || [];
+      const bar = tree?.[0]?.children?.find(n => n.id === "1");
+      root = bar?.children || [];
 
-    buildBookmarkIndex(root);
+      buildBookmarkIndex(root);
 
-    renderRoot(root, dock, helpers);
+      renderRoot(root, dock);
   });
 
   // ---------------- SEARCH ----------------
@@ -62,6 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
         "https://www.google.com/search?q=" +
         encodeURIComponent(query);
     }
+  });
+
+  const settingsBtn = document.getElementById("settings-btn");
+
+  settingsBtn?.addEventListener("click", () => {
+    chrome.tabs.update({ url: "chrome://settings/" });
   });
 
   // ---------------- INIT OTHER FEATURES ----------------

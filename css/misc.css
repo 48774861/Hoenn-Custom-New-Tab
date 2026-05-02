@@ -1,0 +1,38 @@
+.artist-credit {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+
+    font-family: "PixelFont", monospace;
+    font-size: 12px;
+    color: #edd8ac;
+    opacity: 0.7;
+
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    animation: subtleFloat 6s ease-in-out infinite;
+}
+.artist-credit:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+@keyframes subtleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+#corner-gif {
+    position: fixed;
+    bottom: 25px; /* sits above artist credit */
+    right: 0px;
+
+    width: 80px; /* adjust size */
+    height: auto;
+
+    pointer-events: none; /* so it doesn’t block clicks */
+    image-rendering: pixelated; /* optional: keeps retro look */
+
+    animation: subtleFloat 6s ease-in-out infinite;
+}

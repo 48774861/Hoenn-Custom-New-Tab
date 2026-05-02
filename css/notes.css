@@ -1,0 +1,39 @@
+#notes-wrapper {
+  position: fixed;
+  top: 150px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 9999;
+}
+
+#quick-notes {
+  width: 160px;
+  height: 120px;
+  resize: none;
+  outline: none;
+  font-family: "PixelFont", monospace;
+  font-size: 12px;
+  color: #edd8ac;
+  background: url("../icons/default_notes.png") center / cover no-repeat;
+  border: 2px solid #2a2b1f;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+}
+
+#notes-bg-btn {
+  width: 75px;
+  height: 10px;
+  font-size: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #edd8ac;
+}
+
+#quick-notes:hover {
+  transform: translateY(-2px);
+}

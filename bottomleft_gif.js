@@ -6,8 +6,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     const chosen = gifs[Math.floor(Math.random() * gifs.length)];
 
     document.getElementById("corner-gif").src = chosen;
-
-    console.log("Loaded GIF:", chosen);
   } catch (e) {
     console.error(e);
   }

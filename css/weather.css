@@ -1,0 +1,154 @@
+/* ========================= FORECAST CONTAINER ========================= */
+#forecast {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 9999;
+  font-family: "LeafFont", monospace;
+  color: #7ba569;
+  padding: 6px 8px;
+  border-radius: 10px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+  animation: windSway 6s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* ========================= WEATHER PLANK ========================= */
+.weather-plank {
+  position: relative;
+  width: fit-content;
+  padding: 8px 10px;
+  background: url("../icons/wood-texture.png");
+  background-size: cover;
+  border: 2px solid #2a2b1f;
+  font-family: "PixelFont";
+  color: #edd8ac;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  opacity: 0;
+  transform: translateY(-10px);
+
+  animation:  
+    dropIn 0.4s ease forwards,
+    windSway 6s ease-in-out infinite;
+
+  animation-delay: 
+    var(--delay, 0ms),
+    var(--winddelay, 0ms);
+
+  transform-origin: top center;
+}
+
+.weather-plank::before,
+.weather-plank::after {
+  content: "";
+  position: absolute;
+  top: -14px;
+  width: 2px;
+  height: 14px;
+  background: linear-gradient(to bottom, #5a3e1b, #c8a976);
+  opacity: 0.9;
+  box-shadow: 0 -2px 0 #2a2b1f;
+}
+
+.weather-plank::before {
+  left: 16px;
+  transform: rotate(-1deg);
+}
+
+.weather-plank::after {
+  right: 16px;
+  transform: rotate(1deg);
+}
+
+/* ========================= TEMP GROUP ========================= */
+.temp-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ========================= TEMP ICON ========================= */
+.temp-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+/* hover effect */
+.temp-group:hover .temp-icon {
+  animation: sway 0.6s ease-in-out infinite;
+}
+
+/* ========================= TEMP TEXT ========================= */
+.temp-text {
+  font-weight: 600;
+  line-height: 1;
+  display: inline-block;
+
+  background: linear-gradient(
+    160deg,
+    var(--start-color, #edd8ac) 0%,
+    var(--start-color, #edd8ac) var(--gradient, 50%),
+    var(--end-color, #ff3838) 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: #333; /* fallback */
+
+  -webkit-text-fill-color: transparent;
+
+  text-shadow: 0 0 0 rgba(0,0,0,0.15);
+
+  transition: all 0.25s ease;
+}
+
+/* hover text override */
+.temp-group:hover .temp-text {
+  -webkit-text-fill-color: var(--end-color, #ff3838);
+  color: var(--end-color, #ff3838);
+  background: none;
+}
+
+/* ========================= ANIMATIONS ========================= */
+
+/* WIND SWAY */
+@keyframes windSway {
+  0% { transform: translateX(0px) rotate(0deg); }
+
+  25% { transform: translateX(-2.8px) rotate(-2.1deg); }
+  50% { transform: translateX(0px) rotate(0deg); }
+  75% { transform: translateX(2.8px) rotate(2.1deg); }
+
+  100% { transform: translateX(0px) rotate(0deg); }
+}
+
+/* ICON SWAY */
+@keyframes sway {
+  0% {
+    transform: scale(1.4) translateX(0px) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.35) translateX(-2.5px) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.4) translateX(0px) rotate(0deg);
+  }
+  75% {
+    transform: scale(1.35) translateX(2.5px) rotate(2deg);
+  }
+  100% {
+    transform: scale(1.4) translateX(0px) rotate(0deg);
+  }
+}
+
+/* DROP IN */
+@keyframes dropIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

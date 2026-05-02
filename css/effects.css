@@ -1,0 +1,32 @@
+@keyframes wiggleSoft {
+    0%, 100% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-3.8deg);
+    }
+    50% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4.2deg);
+    }
+}
+
+@keyframes wiggle {
+    0%, 100% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
+    }
+    50% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-5deg);
+    }
+}
+
+@keyframes wiggleFast {
+    0%, 100% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-4deg);
+    }
+    25% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-5.2deg);
+    }
+    50% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-3.8deg);
+    }
+    75% {
+    transform: perspective(600px) rotateY(-10deg) skewY(-12deg) rotateZ(-5deg);
+    }
+}

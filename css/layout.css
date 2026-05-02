@@ -1,0 +1,38 @@
+#bg-video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+#top-dock {
+  position: fixed;
+  padding-top: 6px;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+}
+
+#dock-left { flex: 1; }
+
+#dock-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 10px;
+  gap: 6px;
+}
+
+#search-container {
+  position: fixed;
+  top: 50%;
+  left: 49%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
